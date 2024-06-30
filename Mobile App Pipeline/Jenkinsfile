@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_VERSION = '14.x' 
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone the repository
+                git url: 'https://github.com/Daoud-Hussain/Fitness-Fuse-Mobile.git', branch: 'main'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Install Node.js
+                    def nodeHome = tool name: 'NodeJS', type: 'NodeJSInstallation'
+                    env.PATH = "${nodeHome}/bin:${env.PATH}"
+
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh 'npm test'
+                }
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo 'Build and Test stages completed successfully.'
+        }
+
+        failure {
+            echo 'Build or Test stage failed.'
+        }
+    }
+}
